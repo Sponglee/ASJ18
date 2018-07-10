@@ -4,29 +4,68 @@ using UnityEngine;
 
 public class AttackManager : MonoBehaviour {
 
-    //private Animator s_Anim;
-    [SerializeField]
-    private string target;
-    [SerializeField]
-    private int dmg = 0;
+    private float timeBtwAttack = -1;
 
+    [SerializeField] private string target;
+    [SerializeField] private float startTimeBtwAttack;
+    [SerializeField] private Transform attackPos;
+    [SerializeField] private LayerMask whatIsEnemy;
+    [SerializeField] private float attackRange;
+    [SerializeField] private int damage;
+    [SerializeField] private Animator anim;
+    [SerializeField] private GameObject boom;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Update()
     {
-        if(gameObject.CompareTag("sword") && collision.gameObject.CompareTag(target))
+        if (timeBtwAttack <= 0)
         {
-            Debug.Log(target + "  " + collision.gameObject.tag);
-            if(target == "enemy")
+
+            //Behaviour for player 
+            if (target == "enemy")
             {
-                EnemyController tmp = collision.gameObject.GetComponent<EnemyController>();
-                if (tmp != null)
-                    tmp.Hp -= dmg;
+                if(Input.GetMouseButton(0))
+                {
+                    
+                    anim.SetBool("Crouch", true);
+                    Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemy);
+                    for (int i = 0; i < enemiesToDamage.Length; i++)
+                    {
+                        enemiesToDamage[i].gameObject.GetComponent<EnemyController>().Hp -= damage;
+                        Instantiate(boom, enemiesToDamage[i].gameObject.transform.position, Quaternion.identity);
+                    }
+                }
+                else
+                    anim.SetBool("Crouch", false);
             }
-            else if(target == "Player")
+            //Behaviour for enemies
+            else if (target == "Player")
             {
-                collision.gameObject.GetComponent<PlayerController>().Hp -= dmg;
+                Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemy);
+
+                for (int i = 0; i < enemiesToDamage.Length; i++)
+                {
+                    
+                        enemiesToDamage[i].gameObject.GetComponent<PlayerController>().Hp -= damage;
+                        Instantiate(boom, enemiesToDamage[i].gameObject.transform.position, Quaternion.identity);
+                }
             }
+
+            timeBtwAttack = startTimeBtwAttack;
         }
+        else
+        {
+            //anim.SetBool("Crouch", false);
+            timeBtwAttack -= Time.fixedDeltaTime;
+        }
+
+
+    }
+
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPos.position, attackRange);
     }
 
 }

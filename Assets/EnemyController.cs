@@ -20,7 +20,7 @@ public class EnemyController : MonoBehaviour {
             hp = value;
             if (hp<=0)
             {
-                Destroy(gameObject);
+                StartCoroutine(StopDestroy());
             }
         }
     }
@@ -44,13 +44,18 @@ public class EnemyController : MonoBehaviour {
 
     private Animator e_AnimSword;
 
-   
+    private IEnumerator StopDestroy()
+    {
+        yield return new WaitForSecondsRealtime(0.3f);
+        Destroy(gameObject);
+    }
+
     private void Start()
     {
         player = GameObject.Find("Player").transform;
-        e_swordCheck = transform.Find("SwordCheck");
+        //e_swordCheck = transform.Find("SwordCheck");
         e_GroundCheck = transform.Find("GroundCheck");
-        e_AnimSword = e_swordCheck.GetComponent<Animator>();
+        //e_AnimSword = e_swordCheck.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -78,15 +83,15 @@ public class EnemyController : MonoBehaviour {
         if (Vector3.Distance(player.position, transform.position) <= range)
         {
             playerAround = true;
-            e_swordCheck.gameObject.SetActive(true);
-            e_AnimSword.SetBool("Swinging", true);
+            //e_swordCheck.gameObject.SetActive(true);
+            //e_AnimSword.SetBool("Swinging", true);
             e_Anim.SetBool("Crouch", true);
         }
         else
         {
             playerAround = false;
-            e_swordCheck.gameObject.SetActive(false);
-            e_AnimSword.SetBool("Swinging", false);
+            //e_swordCheck.gameObject.SetActive(false);
+            //e_AnimSword.SetBool("Swinging", false);
             e_Anim.SetBool("Crouch", false);
         }
 

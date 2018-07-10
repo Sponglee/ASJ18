@@ -47,10 +47,19 @@ public class Enemy : MonoBehaviour {
 
 		if(other.tag == "Player" && thePlayer.rushing){
 			Instantiate (death, gameObject.transform.position, gameObject.transform.rotation);
-			Destroy (gameObject);
+
+            StartCoroutine(StopDestroy());
+           
 		}
 
 	}
+
+
+    private IEnumerator StopDestroy()
+    {
+        yield return new WaitForSecondsRealtime(0.5f);
+        Destroy(gameObject);
+    }
 
 	void turnAround(){
 		if (transform.localScale.x == 1) {

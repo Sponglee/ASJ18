@@ -13,14 +13,14 @@ namespace UnityStandardAssets._2D
         [SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
 
         private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
-        private Transform m_SwordCheck;     //Enable sword trigger
-        private bool swingInProgress = false;  //Sword cooldown
+    
+      
         const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
         private bool m_Grounded;            // Whether or not the player is grounded.
         private Transform m_CeilingCheck;   // A position marking where to check for ceilings
         const float k_CeilingRadius = .01f; // Radius of the overlap circle to determine if the player can stand up
         private Animator m_Anim;
-        private Animator s_Anim;            // Reference to the player's animator component.
+
         private Rigidbody2D m_Rigidbody2D;
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
 
@@ -31,10 +31,10 @@ namespace UnityStandardAssets._2D
         {
             // Setting up references.
             m_GroundCheck = transform.Find("GroundCheck");
-            m_SwordCheck = transform.Find("SwordCheck");
+         
             m_CeilingCheck = transform.Find("CeilingCheck");
             m_Anim = GetComponent<Animator>();
-            s_Anim = m_SwordCheck.GetComponent<Animator>();
+         
             m_Rigidbody2D = GetComponent<Rigidbody2D>();
         }
 
@@ -61,23 +61,17 @@ namespace UnityStandardAssets._2D
 
         public void Move(float move, bool crouch, bool jump)
         {
-        
-            //// If crouching, swing a sword
-            if (crouch)
-            {
-                m_SwordCheck.gameObject.SetActive(true);
-                s_Anim.SetBool("Swinging", true);
 
+
+            if (m_Anim.GetBool("Crouch"))
+            {
+                crouch = true;
             }
             else
-            {
-                m_SwordCheck.gameObject.SetActive(false);
-                s_Anim.SetBool("Swinging", false);
-            }
-
+                crouch = false;
 
             // Set whether or not the character is crouching in the animator
-            m_Anim.SetBool("Crouch", crouch);
+            //m_Anim.SetBool("Crouch", crouch);
 
             //only control the player if grounded or airControl is turned on
             if (m_Grounded || m_AirControl)
@@ -115,13 +109,7 @@ namespace UnityStandardAssets._2D
             }
         }
 
-        private IEnumerator StopSword()
-        {
-            yield return new WaitForSecondsRealtime(1f);
-         
-            Debug.Log("STOP");
-            m_SwordCheck.gameObject.SetActive(false);
-        }
+      
         private void Flip()
         {
             // Switch the way the player is labelled as facing.
